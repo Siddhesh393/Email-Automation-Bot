@@ -1,0 +1,55 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Environment variables
+.env
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# SQLite database
+*.sqlite3
+
+# Build files
+build/
+dist/
+*.egg-info/
+
+# ngrok
+ngrok.exe
+
+# Telegram session/cache
+*.session
+
+# PDF resumes (optional)
+# resumes/*.pdf
+
+# Temporary files
+*.tmp
+*.bak
+
+# Render / deployment
+.render/
+
+# Coverage reports
+htmlcov/
+.coverage
+
+# Jupyter Notebook
+.ipynb_checkpoints/
