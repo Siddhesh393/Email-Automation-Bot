@@ -58,24 +58,26 @@ def send_email(role, emails):
 
         try:
 
-            print("Connecting to SMTP...")
-
-            server = smtplib.SMTP_SSL(
-                "smtp.zoho.in",
-                465,
-                timeout=30
-            )
+            print("Connecting to SMTP via STARTTLS (Port 587)...")
+            
+            # 1. Connect using standard SMTP on port 587
+            server = smtplib.SMTP("smtp.zoho.in", 587, timeout=30)
+            
+            # 2. Put the SMTP connection in TLS (encryption) mode
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
 
             print("Logging in...")
-
             server.login(sender_email, password)
-
             print("SMTP Login Successful")
 
             print("Sending email...")
-
             emails = [email.strip() for email in emails if email.strip()]
             
+            # Note: Zoho requires the 'To' header to match or handle recipients correctly.
+            # Currently your msg["To"] is set to sender_email. If you want recipients to see 
+            # their own email, you may want to set msg["To"] inside a loop, or leave it as is if BCC'ing.
             server.sendmail(
                 sender_email,
                 emails,
@@ -83,7 +85,6 @@ def send_email(role, emails):
             )
 
             print("Email Sent Successfully")
-
             server.quit()
 
         except Exception as e:
