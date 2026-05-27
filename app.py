@@ -14,7 +14,7 @@ from email_utils import send_email
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-ALLOWED_USER_ID = int(os.getenv("ALLOWED_USER_ID "))
+ALLOWED_USER_ID = int(os.getenv("ALLOWED_USER_ID"))
 
 app = FastAPI()
 
