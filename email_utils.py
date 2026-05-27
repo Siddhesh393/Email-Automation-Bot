@@ -56,23 +56,40 @@ def send_email(role, emails):
 
         msg.attach(part)
 
-        # SMTP connection
-        server = smtplib.SMTP_SSL(
-            "smtp.zoho.in",
-            465,
-            timeout=30
-        )
+        try:
 
-        server.login(sender_email, password)
+            print("Connecting to SMTP...")
 
-        server.sendmail(
-            sender_email,
-            emails,
-            msg.as_string()
-        )
+            server = smtplib.SMTP_SSL(
+                "smtp.zoho.in",
+                465,
+                timeout=30
+            )
 
-        server.quit()
+            print("Logging in...")
 
+            server.login(sender_email, password)
+
+            print("SMTP Login Successful")
+
+            print("Sending email...")
+
+            emails = [email.strip() for email in emails if email.strip()]
+            
+            server.sendmail(
+                sender_email,
+                emails,
+                msg.as_string()
+            )
+
+            print("Email Sent Successfully")
+
+            server.quit()
+
+        except Exception as e:
+            print("SMTP ERROR:", e)
+            return f"FAILED: {str(e)}"
+        
         return "SUCCESS"
 
     except Exception as e:
