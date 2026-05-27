@@ -9,17 +9,20 @@ from telegram.ext import (
     filters,
 )
 from dotenv import load_dotenv
-
 from email_utils import send_email
 
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+ALLOWED_USER_ID = int(os.getenv("ALLOWED_USER_ID "))
 
 app = FastAPI()
 
 telegram_app = Application.builder().token(BOT_TOKEN).build()
 BOT_ACTIVE = True
+
+def is_authorized(update: Update):
+    return update.effective_user.id == ALLOWED_USER_ID
 
 # START COMMAND
 async def start_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -42,7 +45,13 @@ async def stop_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # HANDLE MESSAGE
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
+    
+    if not is_authorized(update):
+        await update.message.reply_text(
+            "❌ Unauthorized access."
+        )
+        return
+    
     global BOT_ACTIVE
     if not BOT_ACTIVE:
         await update.message.reply_text(
