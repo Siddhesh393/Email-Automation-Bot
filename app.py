@@ -19,39 +19,52 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 app = FastAPI()
 
 telegram_app = Application.builder().token(BOT_TOKEN).build()
-
+BOT_ACTIVE = True
 
 # START COMMAND
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global BOT_ACTIVE
+    BOT_ACTIVE = True
     await update.message.reply_text(
+        "✅ Bot activated."
         "Send message in this format:\n\n"
         "AI/ML\n"
         "email1@gmail.com\n"
         "email2@gmail.com"
     )
 
+async def stop_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global BOT_ACTIVE
+    BOT_ACTIVE = False
+    await update.message.reply_text(
+        "🛑 Bot stopped.\nEmails will not be sent."
+    )
 
 # HANDLE MESSAGE
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    global BOT_ACTIVE
+    if not BOT_ACTIVE:
+        await update.message.reply_text(
+            "⚠️ Bot is currently stopped."
+        )
+        return
+    
     text = update.message.text
-
     lines = text.strip().split("\n")
-
     role = lines[0].strip().lower()
     emails = [email.strip() for email in lines[1:]]
-
     await update.message.reply_text("Sending emails... ⏳")
 
     result = send_email(role, emails)
-
     if result == "SUCCESS":
         await update.message.reply_text("✅ Emails sent successfully!")
     else:
         await update.message.reply_text(f"❌ {result}")
 
 
-telegram_app.add_handler(CommandHandler("start", start))
+telegram_app.add_handler(CommandHandler("stop", stop_bot))
+telegram_app.add_handler(CommandHandler("start", start_bot))
 telegram_app.add_handler(
     MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message)
 )
@@ -62,11 +75,8 @@ telegram_app.add_handler(
 async def webhook(request: Request):
 
     data = await request.json()
-
     update = Update.de_json(data, telegram_app.bot)
-
     await telegram_app.process_update(update)
-
     return {"status": "ok"}
 
 

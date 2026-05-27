@@ -57,11 +57,19 @@ def send_email(role, emails):
         msg.attach(part)
 
         # SMTP connection
-        server = smtplib.SMTP("smtp.zoho.in", 587)
-        server.starttls()
+        server = smtplib.SMTP_SSL(
+            "smtp.zoho.in",
+            465,
+            timeout=30
+        )
+
         server.login(sender_email, password)
 
-        server.sendmail(sender_email, emails, msg.as_string())
+        server.sendmail(
+            sender_email,
+            emails,
+            msg.as_string()
+        )
 
         server.quit()
 
